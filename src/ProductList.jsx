@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "./CartSlice";
 function ProductList({ onHomeClick }) {
-    const dispatch = useDispatch();
+	const dispatch = useDispatch();
 	const [showCart, setShowCart] = useState(false);
 	const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addedToCart, setAddedToCart] = useState({}); // State to keep track of added plants
+	const [addedToCart, setAddedToCart] = useState({}); // State to keep track of added plants
+	const cartItems = useSelector((state) => state.cart.items);
 
-    const handleAddToCart = (product) => {
-        dispatch(addItem(product));
-        setAddedToCart((prevState) => ({
-            ...prevState,
-            [product.name]: true, // Mark the plant as added to cart
-        }));
-    }
+	const handleAddToCart = (product) => {
+		dispatch(addItem(product));
+	};
+
+	useEffect(() => {
+		const newItems = cartItems.reduce((acc, item) => {
+			acc[item.name] = true;
+			return acc;
+		}, {});
+		setAddedToCart(newItems);
+	}, [cartItems]);
+
 	const plantsArray = [
 		{
 			category: "Air Purifying Plants",
@@ -294,9 +300,14 @@ function ProductList({ onHomeClick }) {
 		setShowCart(false); // Hide the cart when navigating to About Us
 	};
 
-	const handleContinueShopping = (e) => {
-		e.preventDefault();
+	const handleContinueShopping = () => {
 		setShowCart(false);
+	};
+
+	const calculateTotalQuantity = () => {
+		return cartItems
+			? cartItems.reduce((total, item) => total + item.quantity, 0)
+			: 0;
 	};
 
 	return (
@@ -327,6 +338,7 @@ function ProductList({ onHomeClick }) {
 						{" "}
 						<a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
 							<h1 className="cart">
+								<div className="quantity">{calculateTotalQuantity()}</div>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 256 256"
@@ -341,9 +353,9 @@ function ProductList({ onHomeClick }) {
 										d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8"
 										fill="none"
 										stroke="#faf9f9"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth="2"
 										id="mainIconPathAttribute"
 									></path>
 								</svg>
@@ -353,33 +365,45 @@ function ProductList({ onHomeClick }) {
 				</div>
 			</div>
 
-			<div className="product-grid" style={{ backgroundColor: "orange" }}>
-				{plantsArray.map((element, index) => (
-					<div key={index} style={{ backgroundColor: "pink" }}>
-						<h1>
-							<div>{element.category}</div>
-						</h1>
-						<div className="product-list">
-							{element.plants.map((plant, plantIndex) => (
-								<div key={plantIndex} className="product-card">
-                                    <img
-										src={plant.image}
-										alt={plant.name}
-										className="product-image"
-									/>
-									<div className="product-title">{plant.name}</div>
-									<div className="product-description">{plant.description}</div>
-									<div className="product-price">{plant.cost}</div>
-									<button className="product-button" onClick={() => handleAddToCart(plant)}>Add to Cart</button>
-								</div>
-							))}
-						</div>
-					</div>
-				))}
-			</div>
-
 			{!showCart ? (
-				<div className="product-grid"></div>
+				<div className="product-grid">
+					{JSON.stringify(addedToCart)}
+					{plantsArray.map((element, index) => (
+						<div key={index}>
+							<h1 className="product-category">
+								<div>{element.category}</div>
+							</h1>
+							<div className="product-list">
+								{element.plants.map((plant, plantIndex) => (
+									<div key={plantIndex} className="product-card">
+										<img
+											src={plant.image}
+											alt={plant.name}
+											className="product-image"
+										/>
+										<div className="product-title">{plant.name}</div>
+										<div className="product-description">
+											{plant.description}
+										</div>
+										<div className="product-price">{plant.cost}</div>
+										<button
+											className={
+												"product-button" +
+												(addedToCart[plant.name] === true
+													? " added-to-cart"
+													: "")
+											}
+											onClick={() => handleAddToCart(plant)}
+											disabled={addedToCart[plant.name] === true ? true : false}
+										>
+											Add to Cart
+										</button>
+									</div>
+								))}
+							</div>
+						</div>
+					))}
+				</div>
 			) : (
 				<CartItem onContinueShopping={handleContinueShopping} />
 			)}

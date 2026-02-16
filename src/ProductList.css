@@ -81,6 +81,14 @@ body {
     z-index: 1;
 }
 
+.product-category {
+    text-align: center;
+    margin: 3rem 0;
+    padding: 1rem 0;
+    border-bottom: 3px solid #000;
+    border-top: 3px solid #000;
+}
+
 .product-title {
     font-weight: bold;
     margin-bottom: 10px;
@@ -217,6 +225,7 @@ body {
   
   .product-button.added-to-cart {
     background-color: grey; /* Grey when product is added */
+    cursor: not-allowed; /* Change cursor to indicate it's disabled */
   }
   @media (max-width: 1200px) {
     .product-card {

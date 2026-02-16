@@ -3,20 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const CartSlice = createSlice({
 	name: "cart",
 	initialState: {
-		items: [
-			{
-				name: "Snake Plant",
-				image:
-					"https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant-5939187_1280.jpg",
-				cost: "$15",
-			},
-			{
-				name: "Spider Plant",
-				image:
-					"https://cdn.pixabay.com/photo/2018/07/11/06/47/chlorophytum-3530413_1280.jpg",
-				cost: "$12",
-			},
-		],
+		items: [],
 	},
 	reducers: {
 		addItem: (state, action) => {
