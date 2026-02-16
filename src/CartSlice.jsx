@@ -1,21 +1,45 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const CartSlice = createSlice({
-  name: 'cart',
-  initialState: {
-    items: [], // Initialize items as an empty array
-  },
-  reducers: {
-    addItem: (state, action) => {
-    
-    },
-    removeItem: (state, action) => {
-    },
-    updateQuantity: (state, action) => {
-
-    
-    },
-  },
+	name: "cart",
+	initialState: {
+		items: [
+			{
+				name: "Snake Plant",
+				image:
+					"https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant-5939187_1280.jpg",
+				cost: "$15",
+			},
+			{
+				name: "Spider Plant",
+				image:
+					"https://cdn.pixabay.com/photo/2018/07/11/06/47/chlorophytum-3530413_1280.jpg",
+				cost: "$12",
+			},
+		],
+	},
+	reducers: {
+		addItem: (state, action) => {
+			const { name, image, cost } = action.payload;
+			const existingItem = state.items.find((item) => item.name === name);
+			if (existingItem) {
+				existingItem.quantity++;
+			} else {
+				state.items.push({ name, image, cost, quantity: 1 });
+			}
+		},
+		removeItem: (state, action) => {
+			const name = action.payload;
+			state.items = state.items.filter((item) => item.name !== name);
+		},
+		updateQuantity: (state, action) => {
+			const { name, quantity } = action.payload;
+			const existingItem = state.items.find((item) => item.name === name);
+			if (existingItem) {
+				existingItem.quantity = quantity;
+			}
+		},
+	},
 });
 
 export const { addItem, removeItem, updateQuantity } = CartSlice.actions;
